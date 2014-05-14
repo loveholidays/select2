@@ -1109,7 +1109,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     this.attachEvent("onpropertychange", self._sync);
                 });
             }
-            
+
             // safari, chrome, firefox, IE11
             observer = window.MutationObserver || window.WebKitMutationObserver|| window.MozMutationObserver;
             if (observer !== undefined) {
@@ -1820,11 +1820,16 @@ the specific language governing permissions and limitations under the Apache Lic
             }
             var index=this.highlight(),
                 highlighted=this.results.find(".select2-highlighted"),
-                data = highlighted.closest('.select2-result').data("select2-data");
+                data = highlighted.closest('.select2-result').data("select2-data"),
+                isSelected = (this.opts.allowDeselectFromList && highlighted.is('.select2-selected')? true:false);
 
             if (data) {
                 this.highlight(index);
-                this.onSelect(data, options);
+                if(isSelected) {
+                    this.onDeselect(data, options);
+                } else {
+                    this.onSelect(data, options);
+                }
             } else if (options && options.noFocus) {
                 this.close();
             }
@@ -2413,6 +2418,10 @@ the specific language governing permissions and limitations under the Apache Lic
             }
         },
 
+        onDeselect: function (data, options) {
+
+        },
+
         // single
         updateSelection: function (data) {
 
@@ -2988,6 +2997,18 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.focusSearch();
         },
 
+        onDeselect: function (data, options) {
+
+            if (!this.triggerSelect(data)) { return; }
+
+            this.removeSelectedChoice(data);
+
+            if (this.opts.closeOnSelect) {
+                this.close();
+                this.search.width(10);
+            }
+        },
+
         // multi
         cancel: function () {
             this.close();
@@ -3010,6 +3031,10 @@ the specific language governing permissions and limitations under the Apache Lic
                 val = this.getVal(),
                 formatted,
                 cssClass;
+
+            if(id) {
+                choice.attr("rel",id);
+            }
 
             formatted=this.opts.formatSelection(data, choice.find("div"), this.opts.escapeMarkup);
             if (formatted != undefined) {
@@ -3043,6 +3068,14 @@ the specific language governing permissions and limitations under the Apache Lic
 
             val.push(id);
             this.setVal(val);
+        },
+
+        removeSelectedChoice: function (data) {
+            var id = this.id(data);
+            if(id) {
+                var choice = this.searchContainer.siblings('.select2-search-choice[rel="'+id+'"]');
+                this.unselect(choice);
+            }
         },
 
         // multi
