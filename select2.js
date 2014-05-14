@@ -1511,7 +1511,11 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         findHighlightableChoices: function() {
-            return this.results.find(".select2-result-selectable:not(.select2-disabled):not(.select2-selected)");
+            var highlightableSelector = ".select2-result-selectable:not(.select2-disabled)";
+            if(!this.opts.allowDeselectFromList) {
+                highlightableSelector += ":not(.select2-selected)";
+            }
+            return this.results.find(highlightableSelector);
         },
 
         // abstract
@@ -3371,6 +3375,7 @@ the specific language governing permissions and limitations under the Apache Lic
         loadMorePadding: 0,
         closeOnSelect: true,
         openOnEnter: true,
+        allowDeselectFromList: true,
         containerCss: {},
         dropdownCss: {},
         containerCssClass: "",
