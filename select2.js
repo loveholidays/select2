@@ -2788,7 +2788,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             this.container.on("click", selector, this.bind(function (e) {
                 if (!this.isInterfaceEnabled()) return;
-                if ($(e.target).closest(".select2-search-choice").length > 0) {
+                if (!this.opts.openOnChoiceClicked && $(e.target).closest(".select2-search-choice").length > 0) {
                     // clicked inside a select2 search choice, do not open
                     return;
                 }
@@ -3408,6 +3408,7 @@ the specific language governing permissions and limitations under the Apache Lic
         loadMorePadding: 0,
         closeOnSelect: true,
         openOnEnter: true,
+        openOnChoiceClicked:false,
         allowDeselectFromList: true,
         containerCss: {},
         dropdownCss: {},
