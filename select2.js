@@ -1465,6 +1465,24 @@ the specific language governing permissions and limitations under the Apache Lic
             return evaluate(this.opts.maximumSelectionSize, this.opts.element);
         },
 
+        //abstract
+        areUnselectableItemsVisible: function() {
+            // cache, as we only need to check this once
+            if(this._areUnselectableItemsVisible === undefined) {
+                var unselectable = this.results.find('.select2-result-unselectable').first();
+                if(unselectable.length){
+                    // found an unselectable item, check whether it is hiden by the current styles
+                        this._areUnselectableItemsVisible = unselectable.is(':visible');
+                } else {
+                    // none currently unselectable? assume they are hidden, as that is thedefault style in Select2
+                    // as we're guessing don't cache, hopefully next time an item will be unselectable
+                    // and we'll be able to get a definitive answer
+                    return false;
+                }
+            }
+            return this._areUnselectableItemsVisible;
+        },
+
         // abstract
         ensureHighlightVisible: function () {
             var results = this.results, children, index, child, hb, rb, y, more;
@@ -1473,7 +1491,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (index < 0) return;
 
-            if (index == 0) {
+            if (index == 0 && !this.areUnselectableItemsVisible()) {
 
                 // if the first element is highlighted scroll all the way to the top,
                 // that way any unselectable headers above it will also be scrolled
